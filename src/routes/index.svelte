@@ -1,5 +1,12 @@
 <script context="module" lang="ts">
 	export const prerender = true;
+	import { fb, db } from '$lib/firebase/config';
+	import { collection, getDocs } from 'firebase/firestore';
+
+	const collectionRef = collection(db, 'transactions');
+	getDocs(collectionRef).then((snapshot) => {
+		console.log(snapshot.docs);
+	});
 </script>
 
 <script lang="ts">
