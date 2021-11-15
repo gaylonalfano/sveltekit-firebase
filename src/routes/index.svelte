@@ -1,39 +1,78 @@
 <script context="module" lang="ts">
-	export const prerender = true;
 	import { fb, db } from '$lib/firebase/config';
 	import { collection, getDocs } from 'firebase/firestore';
 
-	const collectionRef = collection(db, 'transactions');
-	getDocs(collectionRef).then((snapshot) => {
-		console.log(snapshot.docs);
-	});
+	export async function load({ page, fetch, session, stuff }) {
+		const collectionRef = collection(db, 'transactions');
+		let transactions = [];
+
+		// NOTE Must AWAIT or doesn't always get the data!
+		await getDocs(collectionRef)
+			.then((snapshot) => {
+				snapshot.docs.forEach((doc) => {
+					transactions.push({
+						...doc.data(),
+						id: doc.id
+					});
+				});
+				// NOTE Runs on the SERVER!
+				console.log(transactions);
+			})
+			.catch((error) => {
+				console.log(error.message);
+				return {
+					error
+				};
+			});
+
+		return { props: { transactions } };
+
+		// const collectionRef = await collection(db, 'transactions');
+		// let transactions = [];
+		// try {
+		// 	getDocs(collectionRef).then((snapshot) => {
+		// 		// console.log(snapshot.docs);
+		// 		snapshot.docs.forEach((doc) => {
+		// 			transactions.push({
+		// 				...doc.data(),
+		// 				id: doc.id
+		// 			});
+		// 		});
+		// 		// NOTE Runs on the SERVER!
+		// 		console.log(transactions);
+		// 	});
+		// 	return { props: { transactions } };
+		// } catch (error) {
+		// 	return {
+		// 		status,
+		// 		error
+		// 	};
+		// }
+	}
 </script>
 
 <script lang="ts">
-	import Counter from '$lib/Counter.svelte';
+	// NOTE Runs in the CLIENT/BROWSER!
+	export let transactions;
 </script>
 
 <svelte:head>
 	<title>Home</title>
 </svelte:head>
 
+<h1>NFTYGMI</h1>
 <section>
-	<h1>
-		<div class="welcome">
-			<picture>
-				<source srcset="svelte-welcome.webp" type="image/webp" />
-				<img src="svelte-welcome.png" alt="Welcome" />
-			</picture>
-		</div>
-
-		to your new<br />SvelteKit app
-	</h1>
-
-	<h2>
-		try editing <strong>src/routes/index.svelte</strong>
-	</h2>
-
-	<Counter />
+	{#if transactions.length !== 0}
+		{#each transactions as transaction (transaction.id)}
+			<h3>{transaction.id}</h3>
+			<ul>
+				<li>{transaction.transactionType}</li>
+				<li>{transaction.transactionCoin}</li>
+				<li>{transaction.nftId}</li>
+				<li>{transaction.nftCollection}</li>
+			</ul>
+		{/each}
+	{/if}
 </section>
 
 <style>
@@ -47,20 +86,5 @@
 
 	h1 {
 		width: 100%;
-	}
-
-	.welcome {
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
 	}
 </style>

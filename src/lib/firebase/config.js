@@ -1,3 +1,5 @@
+// NOTE Have to use '@firebase/app' or breaks.
+// https://githubmemory.com/repo/sveltejs/kit/issues/1850?page=1
 import { initializeApp } from '@firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
