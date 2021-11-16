@@ -62,17 +62,15 @@
 
 <h1>NFTYGMI</h1>
 <section>
-	{#if transactions.length !== 0}
-		{#each transactions as transaction (transaction.id)}
-			<h3>{transaction.id}</h3>
-			<ul>
-				<li>{transaction.transactionType}</li>
-				<li>{transaction.transactionCoin}</li>
-				<li>{transaction.nftId}</li>
-				<li>{transaction.nftCollection}</li>
-			</ul>
-		{/each}
-	{/if}
+	{#each transactions as { id, transactionType, transactionCoin, nftId, nftCollection } (id)}
+		<h3>{id}</h3>
+		<ul>
+			<li>{transactionType}</li>
+			<li>{transactionCoin}</li>
+			<li>{nftId}</li>
+			<li>{nftCollection}</li>
+		</ul>
+	{/each}
 </section>
 
 <style>
